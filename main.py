@@ -17,10 +17,18 @@ class Game(object):
                 if event.type == pygame.KEYDOWN and \
                         event.key == pygame.K_ESCAPE:
                     return
-            x = x % 640 + 1
-            y = y % 480 + 1
-            screen.fill((y%240,200,200))
-            screen.blit(image, (320,240))
+            
+            key = pygame.key.get_pressed()
+            if key[pygame.K_LEFT]:
+                    x -= 10
+            if key[pygame.K_RIGHT]:
+                    x += 10
+            if key[pygame.K_UP]:
+                    y -= 10
+            if key[pygame.K_DOWN]:
+                    y += 10
+
+            screen.fill((200,200,200))
             screen.blit(image, (x,y))
             pygame.display.flip()
 
