@@ -1,17 +1,24 @@
 import pygame
 
+class ScrolledGroup(pygame.sprite.Group):
+    def draw(self, surface):
+            for sprite in self.sprites():
+                    surface.blit(sprite.image, (sprite.rect.x - self.camera_x, sprite.rect.y))
+
 class Game(object):
     def main(self, screen):
         clock = pygame.time.Clock()
 
         background = pygame.image.load('background.png')
+        sprite = ScrolledGroup()
+        sprite.camera_x = 0
         sprites = pygame.sprite.Group()
         self.player = Player(sprites)
         self.walls = pygame.sprite.Group()
         block = pygame.image.load('block.png')
-        for x in range(0, 640, 32):
+        for x in range(0, 800, 32):
             for y in range(0, 480, 32):
-                if x in (0, 640-32) or y in (0, 480-32):
+                if x in (0, 800-32) or y in (0, 480-32):
                     wall = pygame.sprite.Sprite(self.walls)
                     wall.image = block
                     wall.rect = pygame.rect.Rect((x, y), (10,15))
@@ -72,6 +79,8 @@ class Player(pygame.sprite.Sprite):
             if last.top >= cell.bottom and new.top < cell.bottom:
                     new.top = cell.bottom
                     self.dy = 0
+        self.groups()[0].camera_x = self.rect.x - 320
+
 
 if __name__ == '__main__':
     pygame.init()
