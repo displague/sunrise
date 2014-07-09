@@ -7,6 +7,15 @@ class Game(object):
         background = pygame.image.load('background.png')
         sprites = pygame.sprite.Group()
         self.player = Player(sprites)
+        self.walls = pygame.sprite.Group()
+        block = pygame.image.load('block.png')
+        for x in range(0, 640, 32):
+            for y in range(0, 480, 32):
+                if x in (0, 640-32) or y in (0, 480-32):
+                    wall = pygame.sprite.Sprite(self.walls)
+                    wall.image = block
+                    wall.rect = pygame.rect.Rect((x, y), (10,15))
+        sprites.add(self.walls)
 
         while 1:
             dt = clock.tick(30)
@@ -15,11 +24,11 @@ class Game(object):
                 if event.type == pygame.QUIT:
                     return
                 if event.type == pygame.KEYDOWN and \
-                    event.key == pygame.K_ESCAPE:
-                        return
+                        event.key == pygame.K_ESCAPE:
+                            return
 
 
-            sprites.update(dt / 1000.)
+            sprites.update(dt / 1000., self)
             screen.fill((200,200,200))
             screen.blit(background, (0,0))
             sprites.draw(screen)
@@ -31,7 +40,9 @@ class Player(pygame.sprite.Sprite):
         self.image = pygame.image.load('player.png')
         self.rect = pygame.rect.Rect((320,240), self.image.get_size())
 
-    def update(self, dt):
+    def update(self, dt, game):
+        last = self.rect.copy()
+
         key = pygame.key.get_pressed()
         if key[pygame.K_LEFT]:
             self.rect.x -= 300 * dt
@@ -41,6 +52,9 @@ class Player(pygame.sprite.Sprite):
             self.rect.y -= 300 * dt
         if key[pygame.K_DOWN]:
             self.rect.y += 300 * dt
+
+        for cell in pygame.sprite.spritecollide(self, game.walls, False):
+            self.rect = last
 
 if __name__ == '__main__':
     pygame.init()
