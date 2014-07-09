@@ -39,6 +39,8 @@ class Player(pygame.sprite.Sprite):
         super(Player, self).__init__(*groups)
         self.image = pygame.image.load('player.png')
         self.rect = pygame.rect.Rect((320,240), self.image.get_size())
+        self.resting = False
+        self.dy = 0
 
     def update(self, dt, game):
         last = self.rect.copy()
@@ -48,13 +50,28 @@ class Player(pygame.sprite.Sprite):
             self.rect.x -= 300 * dt
         if key[pygame.K_RIGHT]:
             self.rect.x += 300 * dt
-        if key[pygame.K_UP]:
-            self.rect.y -= 300 * dt
-        if key[pygame.K_DOWN]:
-            self.rect.y += 300 * dt
 
+        if self.resting and key[pygame.K_SPACE]:
+            self.dy = -500
+        self.dy = min(400, self.dy + 40)
+
+        self.rect.y += self.dy * dt
+
+        new = self.rect
+        self.resting = False
         for cell in pygame.sprite.spritecollide(self, game.walls, False):
-            self.rect = last
+            cell = cell.rect
+            if last.right <= cell.left and new.right > cell.left:
+                    new.right = cell.left
+            if last.left >= cell.right and new.left < cell.right:
+                    new.left = cell.right
+            if last.bottom <= cell.top and new.bottom > cell.top:
+                    self.resting = True
+                    new.bottom = cell.top
+                    self.dy = 0
+            if last.top >= cell.bottom and new.top < cell.bottom:
+                    new.top = cell.bottom
+                    self.dy = 0
 
 if __name__ == '__main__':
     pygame.init()
