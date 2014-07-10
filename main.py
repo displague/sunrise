@@ -1,4 +1,5 @@
 import pygame
+#import tmx
 
 class ScrolledGroup(pygame.sprite.Group):
     def draw(self, surface):
@@ -10,9 +11,8 @@ class Game(object):
         clock = pygame.time.Clock()
 
         background = pygame.image.load('background.png')
-        sprite = ScrolledGroup()
-        sprite.camera_x = 0
-        sprites = pygame.sprite.Group()
+        sprites = ScrolledGroup()
+        sprites.camera_x = 0
         self.player = Player(sprites)
         self.walls = pygame.sprite.Group()
         block = pygame.image.load('block.png')
