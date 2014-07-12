@@ -15,7 +15,7 @@ class Game(object):
         sprites.camera_x = 0
         self.walls = pygame.sprite.Group()
 
-        self.tilemap = tmx.load('desert.tmx', screen.get_size())
+        self.tilemap = tmx.load('map.tmx', screen.get_size())
 
         self.sprites = tmx.SpriteLayer()
         start_cell = self.tilemap.layers['triggers'].find('player')[0]
@@ -44,7 +44,7 @@ class Player(pygame.sprite.Sprite):
         self.image = pygame.image.load('player.png')
         self.rect = pygame.rect.Rect(location, self.image.get_size())
         self.resting = False
-        self.dy = 0
+        self.dy = 300
 
     def update(self, dt, game):
         last = self.rect.copy()
@@ -83,5 +83,5 @@ class Player(pygame.sprite.Sprite):
 
 if __name__ == '__main__':
     pygame.init()
-    screen = pygame.display.set_mode((640,480))
+    screen = pygame.display.set_mode((800,600))
     Game().main(screen)
