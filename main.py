@@ -15,7 +15,7 @@ class Game(object):
         sprites.camera_x = 0
         self.walls = pygame.sprite.Group()
 
-        self.tilemap = tmx.load('map.tmx', screen.get_size())
+        self.tilemap = tmx.load('desert.tmx', screen.get_size())
 
         self.sprites = tmx.SpriteLayer()
         start_cell = self.tilemap.layers['triggers'].find('player')[0]
