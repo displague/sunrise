@@ -54,12 +54,16 @@ class Player(pygame.sprite.Sprite):
             self.rect.x -= 300 * dt
         if key[pygame.K_RIGHT]:
             self.rect.x += 300 * dt
+        if key[pygame.K_UP]:
+            self.rect.y -= 300 * dt
+        if key[pygame.K_DOWN]:
+            self.rect.y += 300 * dt
 
-        if self.resting and key[pygame.K_SPACE]:
-            self.dy = -500
-        self.dy = min(400, self.dy + 40)
+        #if self.resting and key[pygame.K_SPACE]:
+        #    self.dy = -500
+        #self.dy = min(400, self.dy + 40)
 
-        self.rect.y += self.dy * dt
+        #self.rect.y += self.dy * dt
 
         new = self.rect
         self.resting = False
