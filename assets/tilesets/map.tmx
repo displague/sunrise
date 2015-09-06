@@ -3,7 +3,7 @@
  <tileset firstgid="1" source="tiles.tsx"/>
  <tileset firstgid="2" source="triggers.tsx"/>
  <tileset firstgid="8" name="sample-tileset" tilewidth="32" tileheight="32">
-  <image source="sample-tileset.png" width="192" height="128"/>
+	 <image source="../images/sample-tileset.png" width="192" height="128"/>
  </tileset>
  <layer name="set" width="50" height="50">
   <data encoding="base64" compression="zlib">
