@@ -13,6 +13,7 @@ from xml.etree import ElementTree
 
 
 class Tile(object):
+
     def __init__(self, gid, surface, tileset):
         self.gid = gid
         self.surface = surface
@@ -50,6 +51,7 @@ class Tile(object):
 
 
 class Tileset(object):
+
     def __init__(self, name, tile_width, tile_height, firstgid):
         self.name = name
         self.tile_width = tile_width
@@ -91,7 +93,7 @@ class Tileset(object):
         for line in xrange(image.get_height() / self.tile_height):
             for column in xrange(image.get_width() / self.tile_width):
                 pos = Rect(column * self.tile_width, line * self.tile_height,
-                    self.tile_width, self.tile_height)
+                           self.tile_width, self.tile_height)
                 self.tiles.append(Tile(id, image.subsurface(pos), self))
                 id += 1
 
@@ -100,6 +102,7 @@ class Tileset(object):
 
 
 class Tilesets(dict):
+
     def add(self, tileset):
         for i, tile in enumerate(tileset.tiles):
             i += tileset.firstgid
@@ -107,6 +110,7 @@ class Tilesets(dict):
 
 
 class Cell(object):
+
     '''Layers are made of Cells (or empty space).
 
     Cells have some basic properties:
@@ -124,6 +128,7 @@ class Cell(object):
     property from the cell - this will not affect the Tile or any other Cells
     using the Cell's Tile.
     '''
+
     def __init__(self, x, y, px, py, tile):
         self.x, self.y = x, y
         self.px, self.py = px, py
@@ -176,8 +181,10 @@ class Cell(object):
 
 
 class LayerIterator(object):
+
     '''Iterates over all the cells in a layer in column,row order.
     '''
+
     def __init__(self, layer):
         self.layer = layer
         self.i, self.j = 0, 0
@@ -194,6 +201,7 @@ class LayerIterator(object):
 
 
 class Layer(object):
+
     '''A 2d grid of Cells.
 
     Layers have some basic properties:
@@ -212,6 +220,7 @@ class Layer(object):
 
     Note that empty cells will be set to None instead of a Cell instance.
     '''
+
     def __init__(self, name, visible, map):
         self.name = name
         self.visible = visible
@@ -256,11 +265,21 @@ class Layer(object):
         data = struct.unpack('<%di' % (len(data)/4,), data)
         assert len(data) == layer.width * layer.height
         for i, gid in enumerate(data):
-            if gid < 1: continue   # not set
+            if gid < 1:
+                continue   # not set
             tile = map.tilesets[gid]
             x = i % layer.width
             y = i // layer.width
-            layer.cells[x,y] = Cell(x, y, x*map.tile_width, y*map.tile_height, tile)
+            layer.cells[
+                x,
+                y] = Cell(
+                x,
+                y,
+                x *
+                map.tile_width,
+                y *
+                map.tile_height,
+                tile)
 
         return layer
 
@@ -316,7 +335,7 @@ class Layer(object):
         '''
         r = []
         for cell in self.get_in_region(rect.left, rect.top, rect.right,
-                rect.bottom):
+                                       rect.bottom):
             if not cell.intersects(rect):
                 continue
             if propname in cell:
@@ -335,9 +354,9 @@ class Layer(object):
         i2 = min(self.width, x2 // self.tile_width + 1)
         j2 = min(self.height, y2 // self.tile_height + 1)
         return [self.cells[i, j]
-            for i in range(int(i1), int(i2))
+                for i in range(int(i1), int(i2))
                 for j in range(int(j1), int(j2))
-                    if (i, j) in self.cells]
+                if (i, j) in self.cells]
 
     def get_at(self, x, y):
         '''Return the cell at the nominated (x, y) coordinate.
@@ -368,6 +387,7 @@ class Layer(object):
 
 
 class Object(object):
+
     '''An object in a TMX object layer.
 name: The name of the object. An arbitrary string.
 type: The type of the object. An arbitrary string.
@@ -378,8 +398,9 @@ height: The height of the object in pixels (defaults to 0).
 gid: An reference to a tile (optional).
 visible: Whether the object is shown (1) or hidden (0). Defaults to 1.
     '''
+
     def __init__(self, type, x, y, width=0, height=0, name=None,
-            gid=None, tile=None, visible=1):
+                 gid=None, tile=None, visible=1):
         self.type = type
         self.px = x
         self.left = x
@@ -404,9 +425,11 @@ visible: Whether the object is shown (1) or hidden (0). Defaults to 1.
 
     def __repr__(self):
         if self.tile:
-            return '<Object %s,%s %s,%s tile=%d>' % (self.px, self.py, self.width, self.height, self.gid)
+            return '<Object %s,%s %s,%s tile=%d>' % (
+                self.px, self.py, self.width, self.height, self.gid)
         else:
-            return '<Object %s,%s %s,%s>' % (self.px, self.py, self.width, self.height)
+            return '<Object %s,%s %s,%s>' % (
+                self.px, self.py, self.width, self.height)
 
     def __contains__(self, key):
         if key in self._deleted_properties:
@@ -458,8 +481,8 @@ visible: Whether the object is shown (1) or hidden (0). Defaults to 1.
             h = int(tag.attrib['height'])
 
         o = cls(tag.attrib.get('type', 'rect'), int(tag.attrib['x']),
-            int(tag.attrib['y']), w, h, tag.attrib.get('name'), gid, tile,
-            int(tag.attrib.get('visible', 1)))
+                int(tag.attrib['y']), w, h, tag.attrib.get('name'), gid, tile,
+                int(tag.attrib.get('visible', 1)))
 
         props = tag.find('properties')
         if props is None:
@@ -489,6 +512,7 @@ visible: Whether the object is shown (1) or hidden (0). Defaults to 1.
 
 
 class ObjectLayer(object):
+
     '''A layer composed of basic primitive shapes.
 
     Actually encompasses a TMX <objectgroup> but even the TMX documentation
@@ -503,8 +527,9 @@ class ObjectLayer(object):
         visible - whether the layer is shown (1) or hidden (0).
         objects - the objects in this Layer (Object instances)
     '''
+
     def __init__(self, name, color, objects, opacity=1,
-            visible=1, position=(0, 0)):
+                 visible=1, position=(0, 0)):
         self.name = name
         self.color = color
         self.objects = objects
@@ -519,8 +544,8 @@ class ObjectLayer(object):
     @classmethod
     def fromxml(cls, tag, map):
         layer = cls(tag.attrib['name'], tag.attrib.get('color'), [],
-            float(tag.attrib.get('opacity', 1)),
-            int(tag.attrib.get('visible', 1)))
+                    float(tag.attrib.get('opacity', 1)),
+                    int(tag.attrib.get('visible', 1)))
         for object in tag.findall('object'):
             layer.objects.append(Object.fromxml(object, map))
         for c in tag.findall('property'):
@@ -586,7 +611,7 @@ class ObjectLayer(object):
         '''
         r = []
         for object in self.get_in_region(rect.left, rect.top, rect.right,
-                rect.bottom):
+                                         rect.bottom):
             if propname in object or propname in self.properties:
                 r.append(object)
         return r
@@ -606,11 +631,12 @@ class ObjectLayer(object):
         Return an Object instance or None.
         '''
         for object in self.objects:
-            if object.contains(x,y):
+            if object.contains(x, y):
                 return object
 
 
 class SpriteLayer(pygame.sprite.AbstractGroup):
+
     def __init__(self):
         super(SpriteLayer, self).__init__()
         self.visible = True
@@ -629,7 +655,9 @@ class SpriteLayer(pygame.sprite.AbstractGroup):
             sx, sy = sprite.rect.topleft
             screen.blit(sprite.image, (sx-ox, sy-oy))
 
+
 class Layers(list):
+
     def __init__(self):
         self.by_name = {}
 
@@ -642,7 +670,9 @@ class Layers(list):
             return self[item]
         return self.by_name[item]
 
+
 class TileMap(object):
+
     '''A TileMap is a collection of Layers which contain gridded maps or sprites
     which are drawn constrained by a viewport.
 
@@ -669,13 +699,14 @@ class TileMap(object):
         viewport - a Rect instance giving the current viewport specification
 
     '''
-    def __init__(self, size, origin=(0,0)):
+
+    def __init__(self, size, origin=(0, 0)):
         self.px_width = 0
         self.px_height = 0
         self.tile_width = 0
         self.tile_height = 0
         self.width = 0
-        self.height  = 0
+        self.height = 0
         self.properties = {}
         self.layers = Layers()
         self.tilesets = Tilesets()
@@ -701,7 +732,7 @@ class TileMap(object):
         # get most general map informations and create a surface
         tilemap = TileMap(viewport)
         tilemap.width = int(map.attrib['width'])
-        tilemap.height  = int(map.attrib['height'])
+        tilemap.height = int(map.attrib['height'])
         tilemap.tile_width = int(map.attrib['tilewidth'])
         tilemap.tile_height = int(map.attrib['tileheight'])
         tilemap.px_width = tilemap.width * tilemap.tile_width
@@ -721,6 +752,7 @@ class TileMap(object):
         return tilemap
 
     _old_focus = None
+
     def set_focus(self, fx, fy, force=False):
         '''Determine the viewport based on a desired focus pixel in the
         Layer space (fx, fy) and honoring any bounding restrictions of
@@ -765,7 +797,8 @@ class TileMap(object):
             if (fy - h2) < 0:
                 restricted_fy = h2       # hit minimum Y extent
             elif (fy + h2) > self.px_height:
-                restricted_fy = self.px_height - h2       # hit maximum Y extent
+                # hit maximum Y extent
+                restricted_fy = self.px_height - h2
             else:
                 restricted_fy = fy
 
@@ -830,6 +863,7 @@ class TileMap(object):
         '''
         sx, sy = self.pixel_from_screen(x, y)
         return int(sx//self.tile_width), int(sy//self.tile_height)
+
 
 def load(filename, viewport):
     return TileMap.load(filename, viewport)
